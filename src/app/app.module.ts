@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,7 +17,8 @@ import { TooltipComponent } from './shared/tooltip.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    OverlayModule
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -3,19 +3,20 @@ import { Overlay, OverlayRef, OverlayPositionBuilder } from '@angular/cdk/overla
 import { ComponentPortal } from '@angular/cdk/portal';
 
 import { TooltipComponent } from './tooltip.component';
+import { NotifyService } from './../services/notify.service';
 
 @Directive({
   selector: '[appTooltip]'
 })
 export class TooltipDirective implements OnInit {
-  @Input() tooltipText = '';
-  tooltipVisible = false;
+  @Input('appTooltip') tooltipText = '';
   private overlayRef: OverlayRef;
 
   constructor(
     private overlay: Overlay,
     private elementRef: ElementRef,
-    private overlayPositionBuilder: OverlayPositionBuilder
+    private overlayPositionBuilder: OverlayPositionBuilder,
+    private notifyService: NotifyService
   ) { }
 
   ngOnInit() {
@@ -25,22 +26,45 @@ export class TooltipDirective implements OnInit {
         originX: 'center',
         originY: 'top',
         overlayX: 'center',
-        overlayY: 'bottom'
+        overlayY: 'bottom',
+        offsetY: -8,
       }]);
 
-    this.overlayRef = this.overlay.create({positionStrategy});
+    this.overlayRef = this.overlay.create({ positionStrategy });
+
+    this.notifyService.onOutsideClicked.subscribe(
+      () => { this.hide(); }
+    );
+
+    this.notifyService.onButtonClicked.subscribe(
+      (eventData: Event) => {
+        if (eventData.target === this.elementRef.nativeElement) {
+          this.show();
+        } else {
+          this.hide();
+        }
+      }
+    );
   }
 
-  @HostListener('click')
+  @HostListener('click', ['$event'])
   onClick(eventData: MouseEvent) {
-    if (this.elementRef.nativeElement === eventData.target) {
-      const tootltipPortal = new ComponentPortal(TooltipComponent);
+    this.notifyService.onButtonClicked.emit(eventData);
+  }
 
-      const tooltipRef: ComponentRef<TooltipComponent> = this.overlayRef.attach(tootltipPortal);
-
-      tooltipRef.instance.text = this.tooltipText;
-    } else {
-      this.overlayRef.detach();
+  @HostListener('document:keydown', ['$event'])
+  onKeyPress(event: KeyboardEvent) {
+    if (event.key === 'Escape' || event.key === 'Esc') {
+      this.hide();
     }
+  }
+
+  private show() {
+    const tooltipRef: ComponentRef<TooltipComponent> = this.overlayRef.attach(new ComponentPortal(TooltipComponent));
+    tooltipRef.instance.text = this.tooltipText;
+  }
+
+  private hide() {
+    this.overlayRef.detach();
   }
 }

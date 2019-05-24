@@ -1,5 +1,5 @@
 import { Directive, Input, HostListener, ElementRef, OnInit, ComponentRef } from '@angular/core';
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { Overlay, OverlayRef, OverlayPositionBuilder } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 
 import { TooltipComponent } from './tooltip.component';
@@ -12,10 +12,23 @@ export class TooltipDirective implements OnInit {
   tooltipVisible = false;
   private overlayRef: OverlayRef;
 
-  constructor(private overlay: Overlay, private elementRef: ElementRef) { }
+  constructor(
+    private overlay: Overlay,
+    private elementRef: ElementRef,
+    private overlayPositionBuilder: OverlayPositionBuilder
+  ) { }
 
   ngOnInit() {
-    this.overlayRef = this.overlay.create();
+    const positionStrategy = this.overlayPositionBuilder
+      .flexibleConnectedTo(this.elementRef)
+      .withPositions([{
+        originX: 'center',
+        originY: 'top',
+        overlayX: 'center',
+        overlayY: 'bottom'
+      }]);
+
+    this.overlayRef = this.overlay.create({positionStrategy});
   }
 
   @HostListener('click')

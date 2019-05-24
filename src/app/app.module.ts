@@ -5,18 +5,21 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TooltipDirective } from './shared/tooltip.directive';
 import { HomeComponent } from './home/home.component';
+import { TooltipComponent } from './shared/tooltip.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TooltipDirective,
-    HomeComponent
+    HomeComponent,
+    TooltipComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [TooltipComponent]
 })
 export class AppModule { }

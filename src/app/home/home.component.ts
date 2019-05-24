@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
+import { NotifyService } from './../services/notify.service';
 
 @Component({
   selector: 'app-home',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  constructor(private notifyService: NotifyService) { }
 
   ngOnInit() {
   }
 
+  @HostListener('click', ['$event'])
+  onClick(eventData: MouseEvent) {
+    if (!(eventData.target instanceof HTMLButtonElement)) {
+      this.notifyService.onOutsideClicked.emit();
+    }
+  }
 }
